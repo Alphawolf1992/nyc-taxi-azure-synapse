@@ -1,0 +1,20 @@
+{
+	"name": "12_join_data",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi/discovery"
+		},
+		"content": {
+			"query": "use nyc_taxi_discovery;\n\n\nSELECT\n    *\nFROM\n    OPENROWSET(\n        BULK 'trip_data_green_parquet/year=2020/month=01/',\n        FORMAT = 'PARQUET',\n        DATA_SOURCE = 'nyc_taxi_data_raw'\n    ) AS [result]\nWHERE PULOCATIONID IS NULL;\n\n--------------------------------------\n--Performing join\n\nSELECT taxi_zone.*,trip_data.*\nFROM\n    OPENROWSET(\n                BULK 'trip_data_green_parquet/year=2020/month=01/',\n                FORMAT = 'PARQUET',\n                DATA_SOURCE = 'nyc_taxi_data_raw'\n            ) AS trip_data\n    JOIN\n    OPENROWSET(\n        BULK 'https://mgsynapseprojectadls.dfs.core.windows.net/nyc-taxi-data/raw/taxi_zone.csv',\n        FORMAT = 'CSV',\n        HEADER_ROW = TRUE,\n        FIELDTERMINATOR = ',',\n        ROWTERMINATOR = '\\n',\n        PARSER_VERSION = '2.0'\n    ) \n    WITH(LocationID SMALLINT,\n        Borough VARCHAR(15),\n        Zone varchar(50),\n        service_zone varchar(15)\n    ) AS taxi_zone\non trip_data.PULocationID = taxi_zone.locationId\n\n\n\n-----------------------------------------------------------------------------------------------------------------------\n\n-- count in join\n\nSELECT taxi_zone.borough, count(1) as number_of_trips\nFROM\n    OPENROWSET(\n                BULK 'trip_data_green_parquet/year=2020/month=01/',\n                FORMAT = 'PARQUET',\n                DATA_SOURCE = 'nyc_taxi_data_raw'\n            ) AS trip_data\n    JOIN\n    OPENROWSET(\n        BULK 'https://mgsynapseprojectadls.dfs.core.windows.net/nyc-taxi-data/raw/taxi_zone.csv',\n        FORMAT = 'CSV',\n        HEADER_ROW = TRUE,\n        FIELDTERMINATOR = ',',\n        ROWTERMINATOR = '\\n',\n        PARSER_VERSION = '2.0'\n    ) \n    WITH(LocationID SMALLINT,\n        Borough VARCHAR(15),\n        Zone varchar(50),\n        service_zone varchar(15)\n    ) AS taxi_zone\non trip_data.PULocationID = taxi_zone.locationID\nGROUP BY  taxi_zone.borough\nORDER BY  number_of_trips DESC;\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_discovery",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

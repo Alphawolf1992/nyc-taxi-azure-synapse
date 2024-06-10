@@ -1,0 +1,20 @@
+{
+	"name": "10_check_duplicate_data",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi/discovery"
+		},
+		"content": {
+			"query": "use nyc_taxi_discovery;\n\n-- check duplicate in taxi zone data\nSELECT\n   LocationID,\n   count(1) as numbers_of_records\nFROM\n    OPENROWSET(\n        BULK 'https://mgsynapseprojectadls.dfs.core.windows.net/nyc-taxi-data/raw/taxi_zone.csv',\n        FORMAT = 'CSV',\n        HEADER_ROW = TRUE,\n        FIELDTERMINATOR = ',',\n        ROWTERMINATOR = '\\n',\n        PARSER_VERSION = '2.0'\n    ) \n    WITH(LocationID SMALLINT 1,\n        Borough VARCHAR(15) 2,\n        Zone varchar(50) 3,\n        service_zone varchar(15) 4\n    ) AS [result]\nGROUP BY LocationID\nHAVING COUNT(1) > 1;\n\n\n--borough\n\nSELECT\n   Borough,\n   count(2) as numbers_of_records\nFROM\n    OPENROWSET(\n        BULK 'https://mgsynapseprojectadls.dfs.core.windows.net/nyc-taxi-data/raw/taxi_zone.csv',\n        FORMAT = 'CSV',\n        HEADER_ROW = TRUE,\n        FIELDTERMINATOR = ',',\n        ROWTERMINATOR = '\\n',\n        PARSER_VERSION = '2.0'\n    ) \n    WITH(LocationID SMALLINT 1,\n        Borough VARCHAR(15) 2,\n        Zone varchar(50) 3,\n        service_zone varchar(15) 4\n    ) AS [result]\nGROUP BY Borough\nHAVING COUNT(2) > 1;\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_discovery",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
