@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"value": "mg-synapse-project-ws"
+		},
+		"LS_Taxi_Project_ADLS_Source_accountKey": {
+			"value": ""
+		},
+		"mg-synapse-project-ws-WorkspaceDefaultSqlServer_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:mg-synapse-project-ws.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"LS_Taxi_Project_ADLS_Source_properties_typeProperties_url": {
+			"value": "https://mgsynapseprojectadls.dfs.core.windows.net/"
+		},
+		"LS_serverless_sql_pool_nyc_taxi_ldw_properties_typeProperties_server": {
+			"value": "tcp:mg-synapse-project-ws-ondemand.sql.azuresynapse.net,1433"
+		},
+		"LS_serverless_sql_pool_nyc_taxi_ldw_properties_typeProperties_database": {
+			"value": "nyc_taxi_ldw"
+		},
+		"bing-covid-19-data_sasUri": {
+			"value": ""
+		},
+		"mg-synapse-project-ws-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://mgsynapseprojectadls.dfs.core.windows.net"
+		}
+	}
+}
